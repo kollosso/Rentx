@@ -21,7 +21,7 @@ class Car {
   licensePlate: string
 
   @Column()
-  fineAmount: Number
+  fineAmount: number
 
   @Column()
   brand: string

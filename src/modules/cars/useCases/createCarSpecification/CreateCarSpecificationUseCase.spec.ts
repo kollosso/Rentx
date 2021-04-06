@@ -1,7 +1,7 @@
-import { SpecificationsRepository } from "@modules/cars/infra/typeorm/repositories/SpecificationRepository"
+import { AppError } from "@shared/errors/AppError"
+
 import { CarsRepositoryInMemory } from "@modules/cars/repositories/in-memory/CarsRepositoryInMemory"
 import { SpecificationRepositoryInMemory } from "@modules/cars/repositories/in-memory/SpecificationRepositoryInMemory"
-import { AppError } from "@shared/errors/AppError"
 import { CreateCarSpecificationUseCase } from "./CreateCarSpecificationUseCase"
 
 let createCarSpecificationUseCase: CreateCarSpecificationUseCase
@@ -15,11 +15,10 @@ describe('Create Car Specification', () => {
     createCarSpecificationUseCase = new CreateCarSpecificationUseCase(carsRepositoryInMemory, specificationRepositoryInMemory)
   })
   it('should be able to add a new specification to a now-existent car', async () => {
-    expect(async () => {
-      const car_id = '1234'
-      const specifications_id = ["54321"]
-      await createCarSpecificationUseCase.execute({ car_id, specifications_id })
-    }).rejects.toBeInstanceOf(AppError)
+    const car_id = '1234'
+    const specifications_id = ["54321"]
+    await expect(createCarSpecificationUseCase.execute({ car_id, specifications_id })
+    ).rejects.toEqual(new AppError('Car does not exists!'))
   })
 
   it('should be able to add a new specification to he car', async () => {

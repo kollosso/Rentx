@@ -6,6 +6,7 @@ interface ICarsRepository {
   findByLicensePlate(licensePlate: string): Promise<Car>
   findAvailable(categoryId?: string, brand?: string, name?: string): Promise<Car[]>
   findById(id: string): Promise<Car>
+  updatedAvailable(id: string, available: boolean): Promise<void>
 }
 
 export { ICarsRepository }

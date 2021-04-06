@@ -1,3 +1,5 @@
+import { UsersTokensRepositoryInMemory } from "@modules/accounts/repositories/in-memory/UsersTokensRepositoryInMemory"
+import { DayjsDateProvider } from "@shared/container/providers/DateProvider/implementations/DayjsDateProvider"
 import { AppError } from "@shared/errors/AppError"
 import { ICreateUserDTO } from "../../dtos/ICreateUserDTO"
 import { UsersRepositoryInMemory } from "../../repositories/in-memory/UsersRepositoryInMemory"
@@ -7,11 +9,18 @@ import { AuthenticateUserUseCase } from "./AuthenticateUserUseCase"
 let authenticatedUserUseCase: AuthenticateUserUseCase
 let usersRepositoryInMemory: UsersRepositoryInMemory
 let createUserUseCase: CreateUserUseCase
+let usersTokensRepositoryInMemory: UsersTokensRepositoryInMemory
+let dateProvider: DayjsDateProvider
 
 describe('Authenticated user', () => {
   beforeEach(() => {
     usersRepositoryInMemory = new UsersRepositoryInMemory()
-    authenticatedUserUseCase = new AuthenticateUserUseCase(usersRepositoryInMemory)
+    usersTokensRepositoryInMemory = new UsersTokensRepositoryInMemory()
+    dateProvider = new DayjsDateProvider()
+    authenticatedUserUseCase = new AuthenticateUserUseCase(
+      usersRepositoryInMemory,
+      usersTokensRepositoryInMemory,
+      dateProvider)
     createUserUseCase = new CreateUserUseCase(usersRepositoryInMemory)
   })
 
@@ -33,8 +42,8 @@ describe('Authenticated user', () => {
     expect(result).toHaveProperty('token')
   })
 
-  it('should not be able to authenticate an nonexistent user', () => {
-    expect(async () => {
+  it('should not be able to authenticate an nonexistent user', async () => {
+    await expect(async () => {
       await authenticatedUserUseCase.execute({
         email: 'noexist@mail.com',
         password: 'falsePassword'
@@ -43,7 +52,7 @@ describe('Authenticated user', () => {
   })
 
   it('should not be able to authenticate with incorrect password', async () => {
-    expect(async () => {
+    await expect(async () => {
       const user: ICreateUserDTO = {
         driverLicense: "00001",
         email: "johndoe@mail.com",

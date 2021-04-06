@@ -9,7 +9,7 @@ interface IRequest {
   description: string
   dailyRate: number
   licensePlate: string
-  fineAmount: Number
+  fineAmount: number
   brand: string
   categoryId: string
 }

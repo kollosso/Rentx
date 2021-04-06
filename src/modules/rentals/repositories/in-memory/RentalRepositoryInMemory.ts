@@ -3,6 +3,12 @@ import { Rental } from "@modules/rentals/infra/entities/Rental";
 import { IRentalsRepository } from "../IRentalsRepository";
 
 class RentalRepositoryInMemory implements IRentalsRepository {
+  async findById(id: string): Promise<Rental> {
+    return this.rentals.find(rental => rental.id === id)
+  }
+  async findByUser(user_id: string): Promise<Rental[]> {
+    return this.rentals.filter(rental => rental.user_id === user_id)
+  }
   async create({ car_id, expected_return_date, user_id }: ICreateRentalDTO): Promise<Rental> {
     const rental = new Rental()
 
