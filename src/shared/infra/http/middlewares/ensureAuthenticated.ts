@@ -14,7 +14,6 @@ export async function ensureAuthenticated(
   next: NextFunction) {
   const authHeader = request.headers.authorization
 
-  const userTokensRepository = new UsersTokensRepository()
 
   const { secret_refresh_token } = auth.jwt
 
@@ -26,12 +25,6 @@ export async function ensureAuthenticated(
 
   try {
     const { sub: userId } = verify(token, secret_refresh_token) as IPayload
-
-    const user = await userTokensRepository.findByUserIdAndRefreshToken(userId, token)
-
-    if (!user) {
-      throw new AppError('User does not exists!', 401)
-    }
 
     request.user = {
       id: userId

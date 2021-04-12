@@ -10,7 +10,7 @@ import { Connection } from 'typeorm'
 let connection: Connection
 
 describe('List Category Controller', () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     connection = await createConnection()
 
     await connection.runMigrations()
@@ -25,31 +25,31 @@ describe('List Category Controller', () => {
     )
   })
 
-  afterEach(async () => {
+  afterAll(async () => {
     await connection.dropDatabase()
     await connection.close()
   })
   it('should be able to list all categories', async () => {
-    const responseToken = await request(app).post('/session')
-      .send({
-        email: 'admin@rentx.com',
-        password: 'admin'
-      })
+    const responseToken = await request(app).post('/sessions').send({
+      email: 'admin@rentx.com',
+      password: 'admin'
+    })
 
-    const { token } = responseToken.body
-    console.log(token)
+    const { refresh_token } = responseToken.body
+
     await request(app).post('/categories').send({
-      name: "List all category",
-      description: "List all category"
+      name: "Category 01",
+      description: "Category 01"
     }).set({
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${refresh_token}`
     })
 
     const response = await request(app).get('/categories')
+    console.log(response.body)
 
     expect(response.status).toBe(200)
     expect(response.body).toHaveLength(1)
     expect(response.body[0]).toHaveProperty('id')
-    expect(response.body[0].name).toEqual('List all category')
+    expect(response.body[0].name).toEqual('Category 01')
   })
 })
