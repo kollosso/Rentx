@@ -12,5 +12,5 @@ const mailProvider = {
 
 container.registerInstance<IMailProvider>(
   'MailProvider',
-  new mailProvider[process.env.MAIL_PROVIDER]
+  mailProvider[process.env.MAIL_PROVIDER]
 )
